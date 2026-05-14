@@ -1917,12 +1917,6 @@ video {
             renderShortcutsBox();
             queryEl.focus({ preventScroll: true });
 
-            const defaultAOD = { url: "https://unkn0wn4o4.github.io/AOD/", name: "AOD", icon: "🧿" };
-            const currentSites = getAOD();
-            if (!currentSites.some(s => s.url === defaultAOD.url)) {
-                currentSites.push(defaultAOD);
-                setAOD(currentSites);
-            }
             renderAOD();
         }, { once: true });
 
@@ -2479,31 +2473,83 @@ video {
 
             function renderNews(items) {
                 const footer = widget.querySelector('.text-\\[10px\\]');
-                if (footer) footer.innerHTML = 'Powered by <span class="text-amber-400">Open-Meteo</span> & <span class="text-indigo-400">Bing News</span>';
+                if (footer) {
+                    footer.textContent = '';
+                    const powered = document.createTextNode('Powered by ');
+                    const meteo = document.createElement('span');
+                    meteo.className = 'text-amber-400';
+                    meteo.textContent = 'Open-Meteo';
+                    const sep = document.createTextNode(' & ');
+                    const bing = document.createElement('span');
+                    bing.className = 'text-indigo-400';
+                    bing.textContent = 'Bing News';
+                    footer.appendChild(powered);
+                    footer.appendChild(meteo);
+                    footer.appendChild(sep);
+                    footer.appendChild(bing);
+                }
+
+                newsContentEl.textContent = '';
 
                 if (!items || items.length === 0) {
-                    newsContentEl.innerHTML = '<div class="text-slate-500 italic">No news available.</div>';
+                    const empty = document.createElement('div');
+                    empty.className = 'text-slate-500 italic';
+                    empty.textContent = 'No news available.';
+                    newsContentEl.appendChild(empty);
                     return;
                 }
 
-                const contentHtml = items.map(item => `
-          <div class="group relative">
-            <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="block">
-              <p class="text-slate-200 group-hover:text-indigo-300 transition-colors leading-snug pr-0 text-xs sm:text-sm">
-                 ${item.title}
-              </p>
-              <span class="text-[10px] text-slate-500 font-mono inline-block mt-0.5">${item.time}</span>
-            </a>
-            <div class="h-px bg-white/5 my-2"></div>
-          </div>
-        `).join('');
+                function buildItemList(itemsArr) {
+                    const frag = document.createDocumentFragment();
+                    itemsArr.forEach(item => {
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'group relative';
 
-                newsContentEl.innerHTML = `
-          <div class="animate-vertical-scroll hover:pause" style="animation-duration: ${Math.max(30, items.length * 2)}s">
-            <div>${contentHtml}</div>
-            <div>${contentHtml}</div>
-          </div>
-        `;
+                        const a = document.createElement('a');
+                        // Sanitize href: only allow http/https URLs
+                        try {
+                            const u = new URL(item.link || '');
+                            if (u.protocol === 'http:' || u.protocol === 'https:') {
+                                a.href = u.toString();
+                            }
+                        } catch (_) { /* invalid URL, leave href unset */ }
+                        a.target = '_blank';
+                        a.rel = 'noopener noreferrer';
+                        a.className = 'block';
+
+                        const p = document.createElement('p');
+                        p.className = 'text-slate-200 group-hover:text-indigo-300 transition-colors leading-snug pr-0 text-xs sm:text-sm';
+                        p.textContent = item.title || '';
+
+                        const timeSpan = document.createElement('span');
+                        timeSpan.className = 'text-[10px] text-slate-500 font-mono inline-block mt-0.5';
+                        timeSpan.textContent = item.time || '';
+
+                        const divider = document.createElement('div');
+                        divider.className = 'h-px bg-white/5 my-2';
+
+                        a.appendChild(p);
+                        a.appendChild(timeSpan);
+                        wrapper.appendChild(a);
+                        wrapper.appendChild(divider);
+                        frag.appendChild(wrapper);
+                    });
+                    return frag;
+                }
+
+                const scrollDuration = Math.max(30, items.length * 2);
+                const scroller = document.createElement('div');
+                scroller.className = 'animate-vertical-scroll hover:pause';
+                scroller.style.animationDuration = `${scrollDuration}s`;
+
+                const copy1 = document.createElement('div');
+                copy1.appendChild(buildItemList(items));
+                const copy2 = document.createElement('div');
+                copy2.appendChild(buildItemList(items));
+
+                scroller.appendChild(copy1);
+                scroller.appendChild(copy2);
+                newsContentEl.appendChild(scroller);
             }
 
         })();
@@ -2511,7 +2557,3 @@ video {
 </body>
 
 </html>
-
-
-
-
