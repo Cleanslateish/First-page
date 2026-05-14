@@ -1,6 +1,8 @@
+This is just for my peace of mind. Feel free to use the original page! I didn't find any issues whatsoever. I absolutely adore this first page UNKN0WN4O4 created! (https://github.com/UNKN0WN4O4/First-page)
+
 Best way to use the page:)
 
-->[UNKNOWN PAGE](https://unkn0wn4o4.github.io/First-page/)
+->[UNKNOWN PAGE](https://cleanslateish.github.io/First-page//)
 
 Step 1:-
 
@@ -21,7 +23,7 @@ Or use this
 
 Step 3:-
 
-Add this URL to extension https://unkn0wn4o4.github.io/First-page/
+Add this URL to extension https://cleanslateish.github.io/First-page//
 
 Click on "keep it"message
 
